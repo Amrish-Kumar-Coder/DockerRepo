@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  mysqldb:
+    image: mysql
+    networks:
+      - altran-compose-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=mysql  
+  price-service:
+    image: amrishk27/price-service:0.0.1-RELEASE
+    ports:
+      - "8000:8000"
+    networks:
+      - altran-compose-network
+    depends_on:
+      - mysqldb
+
+  product-service:
+    image: amrishk27/product-service:0.0.1-RELEASE
+    ports:
+      - "8100:8100"
+    environment:
+      PRICE_SERVICE_HOST: http://price-service
+    depends_on:
+      - price-service
+    networks:
+      - altran-compose-network
+  
+# Networks to be created to facilitate communication between containers
+networks:
+  altran-compose-network:
